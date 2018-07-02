@@ -1,10 +1,11 @@
-import setuptools
+"""test and build the package"""
 
-def test_suite():
-    import unittest
-    return unittest.TestLoader().discover('test', pattern='*.py')
+import setuptools
+from Cython import Build
+
 
 def main():
+    """main cli entrypoint"""
     setuptools.setup(
         name='hashmap',
         version='0.1',
@@ -15,8 +16,20 @@ def main():
         install_requires=[
             'xxhash',
         ],
+        setup_requires=[
+            'pytest-runner',
+            'pytest-pylint',
+            'pytest-flake8',
+        ],
+        tests_require=[
+            'pytest',
+            'pylint',
+            'flake8',
+        ],
         test_suite='setup.test_suite',
+        ext_modules=Build.cythonize('hashmap/*.pyx'),
     )
+
 
 if __name__ == '__main__':
     main()

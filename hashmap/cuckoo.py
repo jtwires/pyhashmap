@@ -4,12 +4,25 @@ import collections
 
 import xxhash
 
-class HashTable(collections.MutableMapping):
+
+class PyCuckooHashTable(collections.MutableMapping):
+    """pure python cuckoo hash table implementation"""
 
     _nil = object()
     CYCLES = 500
 
-    def __init__(self, m=1024, b=4):  # pylint: disable=W0231
+    def __init__(self, m=1024, b=4):  # pylint: disable=super-init-not-called
+        """initialize new table
+
+        :param long m: the number of buckets to create
+        :param long b: the number of entries per bucket
+
+        the table will be resized if necessary, but resizing is costly
+        and can be avoided if you know how many entries you expect to
+        insert. a good rule of thumb is to aim for 85 - 90% occupancy
+        (i.e., 0.85 * N == m * b).
+
+        """
         assert m % 2 == 0
         self._b = b
         self._m = m
@@ -107,7 +120,7 @@ class HashTable(collections.MutableMapping):
     def _displace(self, b1, b2, key, val):
         data = self._data
 
-        def migrate(path):
+        def _migrate(path):
             idx = path.pop()
             while path:
                 nxt = path.pop()
@@ -131,7 +144,7 @@ class HashTable(collections.MutableMapping):
             idx = path[-1]
             victim = data[idx]
             if victim is self._nil:
-                migrate(path)
+                _migrate(path)
                 return
             b1, b2 = self._buckets(victim)
             bucket = idx / (self._b * 2)
@@ -146,3 +159,10 @@ class HashTable(collections.MutableMapping):
 
         self._rehash()
         self[key] = val
+
+
+try:
+    # pylint: disable=unused-import
+    from hashmap._cuckoo import CuckooHashTable as HashTable
+except ImportError:
+    HashTable = PyCuckooHashTable
