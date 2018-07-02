@@ -1,6 +1,6 @@
 """hash table and filter using cuckoo hashing"""
 
-import xxhash
+import xxh
 import collections
 
 from cpython cimport (
@@ -204,7 +204,7 @@ cdef class CuckooHashTable:
         cdef unsigned long long idx, idx1, idx2
         cdef unsigned long m
         m = self._m >> 1
-        idx = xxhash.xxh64(str(hash(key))).intdigest()
+        idx = xxh.hash64(hash(key))
         idx1 = idx & 0xFFFFFFFFULL
         idx2 = idx >> 32
         b1[0] = ((idx1 * m) >> 32)

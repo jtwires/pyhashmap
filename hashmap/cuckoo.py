@@ -2,7 +2,7 @@
 
 import collections
 
-import xxhash
+import xxh
 
 
 class PyCuckooHashTable(collections.MutableMapping):
@@ -63,7 +63,7 @@ class PyCuckooHashTable(collections.MutableMapping):
             raise KeyError('{}'.format(key))
 
     def _buckets(self, key):
-        idx = xxhash.xxh64(str(hash(key))).intdigest()
+        idx = xxh.hash64(hash(key))
         # see https://lemire.me/blog/2016/06/27/
         # a-fast-alternative-to-the-modulo-reduction/
         idx1, idx2, m = idx & 0xFFFFFFFF, idx >> 32, self._m / 2

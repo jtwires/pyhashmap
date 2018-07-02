@@ -14,7 +14,7 @@ def main():
         author_email='jtwires@gmail.com',
         packages=setuptools.find_packages(exclude=['test.*']),
         install_requires=[
-            'xxhash',
+            'xxh',
         ],
         setup_requires=[
             'pytest-runner',
